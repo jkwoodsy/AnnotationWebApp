@@ -274,14 +274,13 @@ nav {
 }
 
 #google_translate_element {
-    position: absolute; /* Use absolute or fixed positioning */
-    top: 5px;          /* Adjust as needed */
-    left: 50px;         /* Adjust as needed */
-    z-index: 1000;      /* Ensure it's above the canvas */
-    padding: 10px 20px; /* Add padding for better clickability */
-    color: #fff;              /* Text color */
-    border: none;             /* Optional: Remove border */
-    border-radius: 5px;       /* Optional: Rounded corners */
-    cursor: pointer;          /* Indicate it's clickable */
-  }
-  
+    position: absolute; /* Positioned within its container */
+    z-index: 1000;      /* Ensure it sits above other elements */
+    top: 0rem;        /* Adjust vertical position */
+    left: 1.5rem;       /* Adjust horizontal position */
+    color: white;        /* Text color */
+    padding: 0.5rem 1rem; /* Padding for better visibility */
+    border-radius: 5px;  /* Rounded corners */
+    font-size: 1rem;     /* Font size for readability */
+    cursor: pointer;     /* Pointer cursor for interactivity */
+}
