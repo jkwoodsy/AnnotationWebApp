@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let fileType = "";
     let labelsFileName = "";
     let cssLabelObjects = [];
+    let scaleFactor = null;
 
     let lastObjData = null; // Store last .obj data for reloading with .mtl
 
@@ -118,6 +119,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     throw new Error('Unsupported file type. Please upload a .fbx, .obj, or .stl file.');
                 }
                 console.log("Object loaded successfully.");
+                
+                // Recalculate the bounding box
+                box = new THREE.Box3().setFromObject(object);
+                const size = box.getSize(new THREE.Vector3());
+                console.log('Object size: ', size);
+                
+                // Scale the object automatically based on the largest dimension
+                const maxDim = Math.max(size.x, size.y, size.z);
+                scaleFactor = 0.01 / maxDim; // Scale factor to make the largest dimension equal to 1 unit
+                console.log('scale factor: ', scaleFactor);
+                object.scale.set(scaleFactor, scaleFactor, scaleFactor); // Apply scaling 
                 
                 object.traverse( function ( child ) {
                     if (child.isMesh) {
@@ -430,7 +442,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
                 
                 // Scale and replace the object
-                objectWithMaterials.scale.set(0.01, 0.01, 0.01);
+                // Calculate bounding box and scale object automatically
+                /*box = new THREE.Box3().setFromObject(objectWithMaterials);
+                const size = box.getSize(new THREE.Vector3());
+                const maxDim = Math.max(size.x, size.y, size.z);
+                const scaleFactor = 0.1 / maxDim; // Scale factor to make the largest dimension equal to 1 unit 
+                console.log('scale factor: ', scaleFactor);
+                objectWithMaterials.scale.set(scaleFactor, scaleFactor, scaleFactor); // Apply scaling       */ 
+                
+                box = new THREE.Box3().setFromObject(objectWithMaterials);
+                objectWithMaterials.scale.set(scaleFactor, scaleFactor, scaleFactor);
+                //objectWithMaterials.scale.set(0.01, 0.01, 0.01);
                 scene.remove(Object3D); // Remove the previous object
                 scene.add(objectWithMaterials); // Add the new object
                 Object3D = objectWithMaterials;
