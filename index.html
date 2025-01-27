@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="author" content="Sean Bradley" />
+        <title>Annotating Software</title>
+        <link rel="stylesheet" href="styles.css"/>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+        <script src="main.js" type="module" defer></script>
+    </head>
+    <body>
+        <nav>
+            <div id="save-button-div">
+                <label class="no-select"><input id="save-object" class="controls nav-button" type="button" onclick="save()"/>Save Annotations</label>
+            </div>
+            <!-- Add a button to return camera to default position -->
+            <div id="reset-camera-div">
+                <label class="no-select"><input id="reset-camera" class="controls nav-button" type="button">Reset Camera</input></label>
+            </div>
+            <div id="change-object-div">
+                <label class="no-select"><input id="change-object" class="controls nav-button" type="button"/>Change Object</label>
+                <input id="file-select" type="file"/>
+            </div>
+            <div id="add-mtl-div">
+                <label class="no-select"><input id="add-mtl" class="controls nav-button" type="button"/>Add .mtl</label>
+                <input id="mtl-select" type="file" style="display: none;" />
+            </div>
+        </nav>
+        <div id="camera-toggle-div">
+            <label class="switch">
+                <input id="control-switch" type="checkbox">
+                <span class="slider round"></span>
+            </label>
+        </div>
+        <div id="initial-add-div" class="pointer">
+            <label id="initial-add-label" class="pointer "><input id="intial-change-object" class="controls nav-button pointer" type="button"/>Click to add object</label>
+        </div>
+        <div class="controls-container">
+            <!-- This div will contain the selection of available controls -->
+            <div id="cursor" class="button-div">
+                <label id="control-select" class="no-select"><input type="radio" class="controls" name="control" id="select" checked/>Select</label>
+            </div>
+            <div id="add-label" class="button-div">
+                <label id="control-add" class="no-select"><input type="radio" class="controls" name="control" id="add"/>Add Label</label>
+            </div>
+            <div id="delete-label" class="button-div">
+                <label id="control-delete" class="no-select"><input type="radio" class="controls" name="control" id="delete"/>Delete Label</label>
+            </div>
+            <div id="update-label" class="button-div">
+                <label id="control-change" class="no-select"><input type="radio" class="controls" name="control" id="change"/>Update Label</label>
+            </div>
+            <div class="spacing"></div>
+            <div id="show-label-div">
+                <label id="control-show" class="selected"><input type="radio" class="controls" name="toggle" id="show" checked/>Show</label>
+            </div>
+            <div id="hide-label-div" class="">
+                <label id="control-hide" class="not-selected"><input type="radio" class="controls" name="toggle" id="hide"/>Hide</label>
+            </div>
+            <div id="upload-label-div" class="">
+                <label id="control-upload" class="not-selected"><input type="button" class="controls" name="toggle" id="upload"/>Upload</label>
+                <input id="json-file-select" type="file" accept=".json"/>
+            </div>
+        </div>
+        <div class="scene-container">
+            <script type="module" src="main.js"></script>
+        </div>
+        <div id="cover"></div>
+
+        <div id="google_translate_element" style="margin-top: 20px;"></div>
+        <script type="text/javascript">
+            function googleTranslateElementInit() {
+                new google.translate.TranslateElement(
+                    { pageLanguage: "en", layout: google.translate.TranslateElement.InlineLayout.SIMPLE },
+                    "google_translate_element"
+                );
+            }
+        </script>
+        <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+       
+    </body>
+</html>

@@ -1,0 +1,287 @@
+:root {
+    --font-color-one: #ffffff;
+    --initial-button-color: #7a7a7a;
+}
+
+* {
+    /* border: 1px red dashed; */
+    box-sizing: border-box;
+    font-family: 'Roboto', 'sans-serif';
+}
+
+body {
+    overflow: hidden;
+    margin: 0px;
+    background-color: #000000;
+}
+
+a, label {
+    color: var(--font-color-one);
+}
+
+#progressBar {
+    margin: auto;
+    width: 500px;
+    padding: 10px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translateY(-50%) translateX(-50%);
+}
+
+#slider-container {
+    position: absolute;
+    width: 80vh;
+    right: -35vh;
+    top: 50%;
+    /* border: 1px red dashed; */
+    transform: rotate(-90deg);
+    z-index: 1000;
+}
+
+/* The switch - the box around the slider */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 54px;
+    height: 28px;
+  }
+  
+  /* Hide default HTML checkbox */
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  
+  /* The slider */
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+  
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+  
+  input:checked + .slider {
+    background-color: #2196F3;
+  }
+  
+  input:focus + .slider {
+    box-shadow: 0 0 1px #2196F3;
+  }
+  
+  input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+  }
+  
+  /* Rounded sliders */
+  .slider.round {
+    border-radius: 34px;
+  }
+  
+  .slider.round:before {
+    border-radius: 50%;
+  }
+
+/* Nav bar styling */
+nav {
+    position: fixed;
+    z-index: 1000;
+    width: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 1rem auto;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.nav-button {
+    color: var(--font-color-one);
+}
+
+#reset-camera-div, #change-object-div, #save-button-div {
+    opacity: 0.5;
+    font-size: 1rem;
+    margin: 0.5rem;
+    width: 8rem;
+    /* border: 1px red dashed; */
+    text-align: center;
+}
+
+#add-mtl-div {
+    display: none; /* Initially hidden */
+    opacity: 0.5;
+    font-size: 1rem;
+    margin: 0.5rem;
+    width: 8rem;
+    text-align: center;
+}
+
+
+#reset-camera-div:hover, #change-object-div:hover, #save-button-div:hover, #add-mtl-div:hover {
+    opacity: 1;
+    transition: opacity 0.5s;
+}
+
+/* Camera toggle styling */
+#camera-toggle-div {
+    position: absolute;
+    z-index: 1000;
+    top: 0;
+    right: 0;
+    margin: 1.5rem 3rem;
+}
+
+/* Label styling */
+.label {
+    color: white;
+    z-index: 1000;
+}
+
+/* Button styling */
+.controls-container {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    z-index: 1000;
+    /* border: 1px red dashed; */
+    margin-left: 0.5rem;
+    padding: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.button-div {
+    font-size: 1rem;
+    padding: 0.5rem;
+}
+
+.button-div-selected {
+    opacity: 1;
+}
+
+.button-div:hover, .button-div-selected:hover, .button-div-not-selected:hover {
+    opacity: 1;
+    transition: opacity .4s;
+}
+
+.button-div-not-selected {
+    opacity: 0.25;
+}
+
+.button-div-not-selected:not(:hover)  {
+    opacity: 0.25;
+    transition: opacity .4s;
+}
+
+.controls {
+    all: unset;
+}
+
+#file-select, #json-file-select {
+    display: none;
+}
+
+/* Initial select button */
+#initial-add-div {
+    width: 100vw;
+    height: 100vh;
+    display: flex; /* Use flexbox */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    text-align: center; /* Align text center */
+    font-size: 2rem;
+    position: absolute;
+    z-index: 1002;
+    opacity: 0.5;
+}
+
+.initial-add-label {
+    padding: 1.5rem;
+}
+
+#initial-add-object:hover {
+    opacity: 1;
+    transition: opacity 0.5s;
+}
+
+/* Show and hide buttons */
+#show-label-div, #hide-label-div, #upload-label-div {
+    font-size: 1rem;
+    padding: 0.5rem;
+}
+
+#show-label-div:hover, #hide-label-div:hover {
+    opacity: 1;
+}
+
+/* Cover styling */
+#cover {
+    width: 100%;
+    height: 100%;
+    background-color: #000000;
+    z-index: 1001;
+    position: absolute;
+    /* border: 1px red dashed; */
+}
+
+/* Misc */
+.no-select {
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Old versions of Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+.spacing {
+    margin: 0.5rem;
+}
+
+.selected, .not-selected:hover {
+    opacity: 1;
+    transition: opacity 0.5s;
+}
+
+.not-selected {
+    opacity: 0.25;
+    transition: opacity 0.5s;
+}
+
+#google_translate_element {
+    position: absolute; /* Use absolute or fixed positioning */
+    top: 5px;          /* Adjust as needed */
+    left: 50px;         /* Adjust as needed */
+    z-index: 1000;      /* Ensure it's above the canvas */
+    padding: 10px 20px; /* Add padding for better clickability */
+    color: #fff;              /* Text color */
+    border: none;             /* Optional: Remove border */
+    border-radius: 5px;       /* Optional: Rounded corners */
+    cursor: pointer;          /* Indicate it's clickable */
+  }
+  
