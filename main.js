@@ -10,7 +10,7 @@ import { setupScene } from './scene.js';
 import { addLabel, removeAllLabels } from './label.js';
 import { controlsStyling, toggleLabel } from './controls.js';
 import { resetCamera} from './camera.js';
-
+import { loadGoogleTranslate } from './translate.js';
 // Import raycasting library
 /*
     Raycasting allows us to select points on the 3D Model, by selecting this point, we can then add the labels to it.
@@ -19,6 +19,11 @@ import { Raycaster } from 'three/src/core/Raycaster.js'
 
 // Import GUI library for making a GUI
 import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
+
+// Inside main.js
+document.addEventListener('DOMContentLoaded', function () {
+    loadGoogleTranslate();  // Call the function to load Google Translate
+});
 
 document.addEventListener('DOMContentLoaded', function() {
     let initialRead = true;
