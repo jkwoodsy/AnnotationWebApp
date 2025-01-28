@@ -120,7 +120,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     throw new Error('Unsupported file type. Please upload a .fbx, .obj, or .stl file.');
                 }
                 console.log("Object loaded successfully.");
-                
+                object.filename = fileName;
+                console.log(object.filename);
                 // Recalculate the bounding box
                 object.position.set(0, 0, 0);
                 box = new THREE.Box3().setFromObject(object);
@@ -174,7 +175,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Redefine box
                 //box = new THREE.Box3().setFromObject(Object3D);
                 box = new THREE.Box3().setFromObject(object);
-                resetCamera(camera, box);
+                resetCamera(camera, objectArray);
 
                 animate();
             } catch (error) {
@@ -256,7 +257,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Set onclick listener for resetCamera
     document.getElementById('reset-camera').onclick = function() {
-        resetCamera(camera,box);
+        resetCamera(camera,objectArray);
         console.log("Camera reset to default position.");
     };
 
@@ -386,7 +387,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('control-show').click();
             
             controls.dispose();
-            resetCamera(camera, box);
+            resetCamera(camera, objectArray);
             controls = new OrbitControls(camera, labelRenderer.domElement);
             controls.enableDamping = true;
             controls.target.set(0, 0, 0);
