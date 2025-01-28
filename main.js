@@ -46,7 +46,10 @@ document.addEventListener('DOMContentLoaded', function() {
     let box = new THREE.Box3();
 
     // A variable to store the Object to add as raycasting parameter
-    let Object3D = null;
+    //let Object3D = null;
+
+    // An array to store the objects to add as raycasting parameter
+    let objectArray = []; //const?
 
     // scene and clock setup
     const clock = new THREE.Clock();
@@ -71,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // load and replace 3D object
     function loadObject( data ) {
         // Check if there are any old objects in the scene
-        if ( Object.is( Object3D, null ) == false ) { // Object3D !== null    if (Object3D)
+        /*if ( Object.is( Object3D, null ) == false ) { // Object3D !== null    if (Object3D)
             console.log("Removing old object...");
             // Remove all children meshes from the old object
             Object3D.traverse(child => {
@@ -82,7 +85,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             // Remove the old object from the scene
             scene.remove(Object3D);
-        }
+        }*/
         
         console.log("Loading object...");
         console.log( data );
@@ -96,29 +99,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log(fileType);
                 if (fileType == 'fbx'){
                     object = fbxLoader.parse( data, '' );
-                    object.scale.set(0.01, 0.01, 0.01);
+                    //object.scale.set(0.01, 0.01, 0.01);
                     document.getElementById('add-mtl-div').style.display = "none";
                 }
                 else if (fileType == 'obj'){
                     document.getElementById('add-mtl-div').style.display = "block";
                     console.log('obj type');
-                    //const mtlPrompt = window.confirm( 'Do you have an associated .mtl file? Click OK to upload it.');
-
-                    //if (mtlPrompt) {
-                    //    promptForMTL();
-                    //}
-                    //else {
-                        let textData = new TextDecoder().decode(data);
-                        object = objLoader.parse( textData);
-                        object.scale.set(0.01,0.01,0.01);
-                    //}
+                    let textData = new TextDecoder().decode(data);
+                    object = objLoader.parse( textData);
+                    //object.scale.set(0.01,0.01,0.01);
                 }
                 else if (fileType == 'stl'){
                     document.getElementById('add-mtl-div').style.display = "none";
                     const geometry = stlLoader.parse(data);
                     object = new THREE.Mesh(geometry, material);
                     object.rotation.x = -Math.PI / 2; // rotate it 90 degrees
-                    object.scale.set(1, 1, 1);                    
+                    //object.scale.set(1, 1, 1);                    
                 } 
                 else {
                     throw new Error('Unsupported file type. Please upload a .fbx, .obj, or .stl file.');
@@ -126,14 +122,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log("Object loaded successfully.");
                 
                 // Recalculate the bounding box
+                object.position.set(0, 0, 0);
                 box = new THREE.Box3().setFromObject(object);
                 const size = box.getSize(new THREE.Vector3());
                 console.log('Object size: ', size);
                 
                 // Scale the object automatically based on the largest dimension
                 const maxDim = Math.max(size.x, size.y, size.z);
-                scaleFactor = 0.01 / maxDim; // Scale factor to make the largest dimension equal to 1 unit
-                console.log('scale factor: ', scaleFactor);
+                scaleFactor = 1 / maxDim; // Scale factor to make the largest dimension equal to 1 unit
+                console.log('current scale factor: ', scaleFactor);
+                
+                if(objectArray.length > 0){
+                    const lastObject = objectArray[objectArray.length - 1];
+                    const lastSF = lastObject.scale.x;
+                    console.log('Last scale factor: ', lastSF);
+
+                    scaleFactor = Math.min(scaleFactor, lastSF);
+                    console.log('Updated scale factor: ', scaleFactor);
+                }
+                
                 object.scale.set(scaleFactor, scaleFactor, scaleFactor); // Apply scaling 
                 
                 object.traverse( function ( child ) {
@@ -148,13 +155,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 //object.scale.set(1, 1, 1)
                 scene.add(object)
         
-                Object3D = object;
+                //Object3D = object;
+                objectArray.push(object);
 
+                objectArray.forEach((obj) => {
+                    if (obj) {
+                        //obj.scale.set(0,0,0);
+                        obj.scale.set(scaleFactor, scaleFactor, scaleFactor);
+                    }
+                });
+                
+                
                 // Update the raycaster to use the new object's meshes
-                raycasterMeshes = getMeshesFromFBXObject(Object3D);
+                //raycasterMeshes = getMeshesFromFBXObject(Object3D);
+                //raycasterMeshes = getMeshesFromFBXObject(objectArray);
+                raycasterMeshes = objectArray.flatMap((obj) => getMeshesFromFBXObject(obj));
 
                 // Redefine box
-                box = new THREE.Box3().setFromObject(Object3D);
+                //box = new THREE.Box3().setFromObject(Object3D);
+                box = new THREE.Box3().setFromObject(object);
                 resetCamera(camera, box);
 
                 animate();
@@ -209,8 +228,8 @@ document.addEventListener('DOMContentLoaded', function() {
     function onClick( event ) {
         // Get the intersections
         // Check if it intersects with any of the children objects in the scene.
-        const intersections = raycaster.intersectObjects( getMeshesFromFBXObject(Object3D), false);
-
+        //const intersections = raycaster.intersectObjects( getMeshesFromFBXObject(Object3D), false);
+        const intersections = raycaster.intersectObjects(raycasterMeshes, false);
         // If there are any intersections, then we will get the first one.
         switch( buttonState.selectedButton ) {
             case "select":
@@ -284,33 +303,6 @@ document.addEventListener('DOMContentLoaded', function() {
     fileInput.onclick = function( event ) {
         document.getElementById('file-select').click();
 
-        /*document.getElementById('file-select').onchange = function( event ) {
-            // Get file contents
-            let file = event.target.files[0];
-
-            fileName = file.name;
-            /*const fileType = fileName.split('.').pop().toLowerCase(); 
-            console.log(fileType);*/
-
-            /*console.log( file.name );
-
-            // Remove all labels from the scene 
-            removeAllLabels(scene, labels);
-
-            labels = [];
-
-            if( file ) {
-                // Make the button hidden
-                initialObject.hidden = true;
-
-                const fileReader = new FileReader();
-                fileReader.onload = function( e ) {
-                    const data = e.target.result;
-                    console.log( 'calling loadObject' );
-                    loadObject( data );
-                };
-                fileReader.readAsArrayBuffer(file);
-            }*/
         document.getElementById('file-select').onchange = function (event) {
             const objFile = event.target.files[0];
             if (!objFile) {
@@ -427,7 +419,8 @@ document.addEventListener('DOMContentLoaded', function() {
             try {
                 const materials = mtlLoader.parse(mtlData);
                 
-                console.log(Object3D);
+                //console.log(Object3D);
+                console.log(objectArray[0]);
                 console.log(material);
                 console.log(materials);
                 console.log(materials.materials);
@@ -446,24 +439,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 });
                 
-                // Scale and replace the object
-                // Calculate bounding box and scale object automatically
-                /*box = new THREE.Box3().setFromObject(objectWithMaterials);
-                const size = box.getSize(new THREE.Vector3());
-                const maxDim = Math.max(size.x, size.y, size.z);
-                const scaleFactor = 0.1 / maxDim; // Scale factor to make the largest dimension equal to 1 unit 
-                console.log('scale factor: ', scaleFactor);
-                objectWithMaterials.scale.set(scaleFactor, scaleFactor, scaleFactor); // Apply scaling       */ 
                 
                 box = new THREE.Box3().setFromObject(objectWithMaterials);
                 objectWithMaterials.scale.set(scaleFactor, scaleFactor, scaleFactor);
                 //objectWithMaterials.scale.set(0.01, 0.01, 0.01);
-                scene.remove(Object3D); // Remove the previous object
+                scene.remove(object); // Remove the previous object
                 scene.add(objectWithMaterials); // Add the new object
-                Object3D = objectWithMaterials;
+                objectArray.pop();
+                objectArray.push(objectWithMaterials);
     
                 // Update raycaster meshes
-                raycasterMeshes = getMeshesFromFBXObject(Object3D);
+                raycasterMeshes = objectArray.flatMap((obj) => getMeshesFromFBXObject(obj));
     
                 console.log("Materials successfully applied to the object.");
             } catch (error) {
@@ -474,29 +460,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
         mtlReader.readAsText(mtlFile);
     };
-    
-
-
-
-    // Store the last .obj data for reloading
-    /*document.getElementById('file-select').onchange = function (event) {
-        const objFile = event.target.files[0];
-        if (!objFile) {
-            alert("No .obj file selected.");
-            return;
-        }
-
-        fileName = objFile.name;
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            lastObjData = e.target.result; // Store the .obj data
-            loadObject(lastObjData); // Load the object without materials initially
-        };
-        reader.readAsArrayBuffer(objFile);
-    };*/
-
-
-
 
     function animate() {
         requestAnimationFrame(animate)
@@ -514,9 +477,18 @@ document.addEventListener('DOMContentLoaded', function() {
         controlsStyling(buttonState);
         toggleLabel();
 
-        if( Object.is( Object3D, null ) == false ) {
+        /*if( Object.is( Object3D, null ) == false ) {
             document.getElementById('cover').hidden = true;
             document.getElementById('initial-add-div').style.display = "none";
+        }*/
+           // Check if objectArray contains valid objects
+        if (Array.isArray(objectArray) && objectArray.length > 0) {
+            const hasValidObject = objectArray.some(obj => obj !== null && obj instanceof THREE.Object3D);
+
+            if (hasValidObject) {
+                document.getElementById('cover').hidden = true;
+                document.getElementById('initial-add-div').style.display = "none";
+            }
         }
     };
 
