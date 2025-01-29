@@ -36,6 +36,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let labelsFileName = "";
     let cssLabelObjects = [];
     let scaleFactor = null;
+    const objectRawDataMap = new Map();
 
     let lastObjData = null; // Store last .obj data for reloading with .mtl
 
@@ -108,6 +109,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     let textData = new TextDecoder().decode(data);
                     object = objLoader.parse( textData);
                     //object.scale.set(0.01,0.01,0.01);
+                    objectRawDataMap.set(fileName, data);
                 }
                 else if (fileType == 'stl'){
                     document.getElementById('add-mtl-div').style.display = "none";
@@ -447,7 +449,7 @@ document.addEventListener('DOMContentLoaded', function() {
     };
     
     // Handle .mtl file selection
-    document.getElementById('mtl-select').onchange = function (event) {
+    /*document.getElementById('mtl-select').onchange = function (event) {
         const mtlFile = event.target.files[0];
         if (!mtlFile) {
             alert("No .mtl file selected.");
@@ -507,7 +509,162 @@ document.addEventListener('DOMContentLoaded', function() {
         };
     
         mtlReader.readAsText(mtlFile);
+    };*/
+
+    /*document.getElementById('mtl-select').onchange = function (event) {
+        const mtlFile = event.target.files[0];
+        if (!mtlFile) {
+            alert("No .mtl file selected.");
+            return;
+        }
+    
+        if (!lastObjData) {
+            console.error("No .obj data found. Please load an .obj file first.");
+            alert("Please load an .obj file before applying a .mtl file.");
+            return;
+        }
+
+        console.log('lastObj', lastObjData.filename);
+    
+        const mtlReader = new FileReader();
+        mtlReader.onload = (e) => {
+            const mtlData = e.target.result;
+    
+            try {
+                const materials = mtlLoader.parse(mtlData);
+    
+                console.log("Objects in objectArray:");
+                objectArray.forEach(obj => console.log(obj.filename));
+
+                // Debug: Print the file name we are looking for
+                console.log("Looking for:", fileName);
+                
+                // Find the object in the objectArray that matches the name of the loaded .obj file
+                const targetObject = objectArray.find(obj => obj.filename && obj.filename === fileName);
+                if (!targetObject) {
+                    console.error("Matching object not found in objectArray.");
+                    alert("No matching object found in the scene to apply materials.");
+                    return;
+                }
+
+                console.log("Match found:", targetObject.filename);
+    
+                // Apply the loaded materials to the found object
+                objLoader.setMaterials(materials);
+    
+                // Reload the .obj file with applied materials
+                const textData = new TextDecoder().decode(lastObjData);
+                const objectWithMaterials = objLoader.parse(textData);
+    
+                // Ensure no material is transparent
+                objectWithMaterials.traverse((child) => {
+                    if (child.isMesh && child.material) {
+                        child.material.transparent = false; // Disable transparency
+                        child.material.opacity = 1.0; // Ensure full opacity
+                    }
+                });
+
+                box = new THREE.Box3().setFromObject(objectWithMaterials);
+                objectWithMaterials.scale.set(scaleFactor, scaleFactor, scaleFactor);
+    
+                // Replace the target object with the new one containing the applied materials
+                scene.remove(targetObject); // Remove the previous object
+                console.log(targetObject);
+                scene.add(objectWithMaterials); // Add the new object with materials
+                console.log(objectWithMaterials);
+                objectArray[objectArray.indexOf(targetObject)] = objectWithMaterials; // Replace in the array
+    
+                // Update raycaster meshes
+                raycasterMeshes = objectArray.flatMap((obj) => getMeshesFromFBXObject(obj));
+    
+                console.log("Materials successfully applied to the object.");
+            } catch (error) {
+                console.error("Error applying .mtl file:", error);
+                alert("Failed to apply materials. Please ensure the .mtl file is valid and matches the .obj file.");
+            }
+        };
+    
+        mtlReader.readAsText(mtlFile);
+    };*/
+
+    document.getElementById('mtl-select').onchange = function (event) {
+        const mtlFile = event.target.files[0];
+        if (!mtlFile) {
+            alert("No .mtl file selected.");
+            return;
+        }
+    
+        // Check if .mtl file is selected correctly
+        console.log("Selected .mtl file:", mtlFile.name);
+        
+        const mtlReader = new FileReader();
+        console.log("error check 1");
+        mtlReader.onload = (e) => {
+            console.log("error check 2");
+            const mtlData = e.target.result;
+            console.log("MTL data loaded:", mtlData);  // Debugging line
+    
+            try {
+                const materials = mtlLoader.parse(mtlData);
+                console.log("Parsed materials:", materials);  // Debugging line
+                objLoader.setMaterials(materials);
+                
+                // Retrieve raw data for .obj
+                const objFileName = mtlFile.name.replace(".mtl", ".obj");
+                console.log('filename: ', objFileName);
+                const objRawData = objectRawDataMap.get(objFileName);
+                console.log("error check 3");
+                if (!objRawData) {
+                    console.error("No raw .obj data found for the selected .mtl file.");
+                    alert("No corresponding .obj file found for the .mtl.");
+                    return;
+                }
+                console.log("error check 4");
+                const textData = new TextDecoder().decode(objRawData);
+                console.log("error check 5");
+                const objectWithMaterials = objLoader.parse(textData);
+                console.log("error check 6");
+                // Ensure no material is transparent
+                objectWithMaterials.traverse((child) => {
+                    if (child.isMesh && child.material) {
+                        child.material.transparent = false; // Disable transparency
+                        child.material.opacity = 1.0; // Ensure full opacity
+                    }
+                });
+                console.log("error check 7");
+                console.log(objectArray);  // Log the array
+                console.log(objFileName);  // Log the file name you're trying to match
+                const oldObjectIndex = objectArray.findIndex(obj => obj.filename === objFileName);
+                console.log("object index: ", oldObjectIndex);
+                if (oldObjectIndex !== -1) {
+                    const oldObject = objectArray[oldObjectIndex];
+                    scene.remove(oldObject);
+                    console.log("Old object removed from scene.");
+                    objectArray.splice(oldObjectIndex, 1); // Remove from the array
+                    console.log("Old object removed from object array.");
+                }
+                console.log("error check 8");
+
+                box = new THREE.Box3().setFromObject(objectWithMaterials);
+                objectWithMaterials.scale.set(scaleFactor, scaleFactor, scaleFactor);
+
+                // Add the object with materials to the scene
+                scene.add(objectWithMaterials);
+                console.log("Object with materials added to scene.");
+
+                // Add the new object to the array
+                objectArray.push(objectWithMaterials);
+                console.log("Object added to object array.");
+            
+            } catch (error) {
+                console.error("Error applying .mtl file:", error);
+                alert("Failed to apply materials. Please ensure the .mtl file is valid and matches the .obj file.");
+            }
+        };
+    
+        mtlReader.readAsText(mtlFile);
     };
+    
 
     function animate() {
         requestAnimationFrame(animate)
