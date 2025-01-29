@@ -289,16 +289,28 @@ nav {
     position: absolute;
     right: 0;
     top: 0;
-    width: 200px;
+    width: 250px;
     height: 100%;
     background: #000000;
     overflow-y: auto;
     padding: 10px;
     border-left: 1px solid #ccc;
+    z-index: 1002;
 }
 
-#file-list {
+#object-list {
     list-style: none;
     padding: 0;
     margin: 0;
+}
+
+#object-list li {
+    color: red; /* Change text color */
+    font-weight: bold; /* Optional: Make it bold */
+    margin-bottom: 10px; /* Add space between list items */
+    margin-right: 10px;
+}
+
+#object-list li button {
+    margin-left: 5px; /* Add space between filename and button */
 }

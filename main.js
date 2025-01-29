@@ -159,6 +159,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 //Object3D = object;
                 objectArray.push(object);
 
+                //updateSidebar(); // Update sidebar when a new object is added
+                addNewObjectToSidebar(object);
+
                 objectArray.forEach((obj) => {
                     if (obj) {
                         //obj.scale.set(0,0,0);
@@ -184,6 +187,74 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     };
+
+
+    /*function updateSidebar() {
+        console.log("updating sidebar");
+        const list = document.getElementById("object-list");
+        list.innerHTML = ""; // Clear existing list
+    
+        objectArray.forEach((obj, index) => {
+            const listItem = document.createElement("li");
+            listItem.textContent = obj.filename;
+            console.log("filename: ", obj.filename);
+    
+            const hideButton = document.createElement("button");
+            hideButton.textContent = obj.visible ? "Hide" : "Show";
+            hideButton.onclick = () => {
+                console.log("hide button pressed!");
+                obj.visible = !obj.visible;
+                hideButton.textContent = obj.visible ? "Hide" : "Show";
+            };
+    
+            const deleteButton = document.createElement("button");
+            deleteButton.textContent = "Delete";
+            deleteButton.onclick = () => {
+                console.log("delete button pressed!");
+                scene.remove(obj);
+                objectArray.splice(index, 1);
+                updateSidebar(); // Refresh list
+                resetCamera(camera, objectArray);
+            };
+    
+            listItem.appendChild(hideButton);
+            listItem.appendChild(deleteButton);
+            list.appendChild(listItem);
+        });
+    }
+    */
+
+    function addNewObjectToSidebar(obj) {
+        const list = document.getElementById("object-list");
+        const listItem = document.createElement("li");
+        listItem.textContent = obj.filename;
+    
+        const hideButton = document.createElement("button");
+        hideButton.textContent = obj.visible ? "Hide" : "Show";
+        hideButton.onclick = () => {
+            console.log("hide button pressed");
+            obj.visible = !obj.visible;
+            hideButton.textContent = obj.visible ? "Hide" : "Show";
+            obj.visible ? scene.add(obj) : scene.remove(obj); // Add or remove from scene
+        };
+    
+        const deleteButton = document.createElement("button");
+        deleteButton.textContent = "Delete";
+        deleteButton.onclick = () => {
+            console.log("hide button pressed");
+            scene.remove(obj);
+            objectArray = objectArray.filter(o => o !== obj); // Remove object from array
+            updateSidebar(); // Refresh list if needed (you can also just remove this item from the list)
+        };
+    
+        listItem.appendChild(hideButton);
+        listItem.appendChild(deleteButton);
+        list.appendChild(listItem);
+    }
+
+    document.addEventListener('click', (event) => {
+        console.log("Global click detected at:", event.target);
+    });
 
     // Function to get meshes from FBX Object
     function getMeshesFromFBXObject ( object ) {
