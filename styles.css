@@ -284,3 +284,21 @@ nav {
     font-size: 1rem;     /* Font size for readability */
     cursor: pointer;     /* Pointer cursor for interactivity */
 }
+
+#sidebar {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 200px;
+    height: 100%;
+    background: #000000;
+    overflow-y: auto;
+    padding: 10px;
+    border-left: 1px solid #ccc;
+}
+
+#file-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
