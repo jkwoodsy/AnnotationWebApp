@@ -119,7 +119,7 @@ nav {
     color: var(--font-color-one);
 }
 
-#reset-camera-div, #change-object-div, #save-button-div {
+#reset-camera-div, #add-object-div, #save-button-div {
     opacity: 0.5;
     font-size: 1rem;
     margin: 0.5rem;
@@ -138,7 +138,7 @@ nav {
 }
 
 
-#reset-camera-div:hover, #change-object-div:hover, #save-button-div:hover, #add-mtl-div:hover {
+#reset-camera-div:hover, #add-object-div:hover, #save-button-div:hover, #add-mtl-div:hover {
     opacity: 1;
     transition: opacity 0.5s;
 }
@@ -305,8 +305,8 @@ nav {
 }
 
 #object-list li {
-    color: red; /* Change text color */
-    font-weight: bold; /* Optional: Make it bold */
+    color: white; /* Change text color */
+    /*font-weight: bold; /* Optional: Make it bold */
     margin-bottom: 10px; /* Add space between list items */
     margin-right: 10px;
 }

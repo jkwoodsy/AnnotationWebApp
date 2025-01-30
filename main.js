@@ -74,19 +74,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // load and replace 3D object
     function loadObject( data ) {
-        // Check if there are any old objects in the scene
-        /*if ( Object.is( Object3D, null ) == false ) { // Object3D !== null    if (Object3D)
-            console.log("Removing old object...");
-            // Remove all children meshes from the old object
-            Object3D.traverse(child => {
-                if (child.isMesh) {
-                    child.geometry.dispose(); // dispose geometry
-                    child.material.dispose(); // dispose material
-                }
-            });
-            // Remove the old object from the scene
-            scene.remove(Object3D);
-        }*/
         
         console.log("Loading object...");
         console.log( data );
@@ -154,14 +141,11 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                     }
                 });
-                //object.scale.set(0.01, 0.01, 0.01)
-                //object.scale.set(1, 1, 1)
                 scene.add(object)
         
                 //Object3D = object;
                 objectArray.push(object);
 
-                //updateSidebar(); // Update sidebar when a new object is added
                 addObjToSidebar(object);
 
                 objectArray.forEach((obj) => {
@@ -173,12 +157,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 
                 // Update the raycaster to use the new object's meshes
-                //raycasterMeshes = getMeshesFromFBXObject(Object3D);
-                //raycasterMeshes = getMeshesFromFBXObject(objectArray);
                 raycasterMeshes = objectArray.flatMap((obj) => getMeshesFromFBXObject(obj));
 
                 // Redefine box
-                //box = new THREE.Box3().setFromObject(Object3D);
                 box = new THREE.Box3().setFromObject(object);
                 resetCamera(camera, objectArray);
 
@@ -295,7 +276,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 break;
             case "delete":
                 break;
-            case "change":
+            case "add":
                 break;
         }
     };
@@ -348,7 +329,7 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     // Set onClick listener for changeObject
-    const fileInput = document.getElementById('change-object');
+    const fileInput = document.getElementById('add-object');
 
     fileInput.onclick = function( event ) {
         document.getElementById('file-select').click();
@@ -489,7 +470,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 objectWithMaterials.traverse((child) => {
                     if (child.isMesh && child.material) {
                         child.material.transparent = false; // Disable transparency
-                        child.material.opacity = 1.0; // Ensure full opacity
+                        child.material.opacity = 1; // Ensure full opacity
                     }
                 });
                 console.log("error check 7");
@@ -500,6 +481,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (oldObjectIndex !== -1) {
                     const oldObject = objectArray[oldObjectIndex];
                     scene.remove(oldObject);
+                    objectWithMaterials.filename = oldObject.filename;
                     console.log("Old object removed from scene.");
                     objectArray.splice(oldObjectIndex, 1); // Remove from the array
                     console.log("Old object removed from object array.");
@@ -516,6 +498,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Add the new object to the array
                 objectArray.push(objectWithMaterials);
                 console.log("Object added to object array.");
+                updateSidebar();
             
             } catch (error) {
                 console.error("Error applying .mtl file:", error);
