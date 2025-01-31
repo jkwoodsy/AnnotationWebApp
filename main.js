@@ -183,7 +183,19 @@ document.addEventListener('DOMContentLoaded', function() {
             obj.visible = !obj.visible;
             hideButton.textContent = obj.visible ? "Hide" : "Show";
             obj.visible ? scene.add(obj) : scene.remove(obj); // Add or remove from scene
-           
+
+            cssLabelObjects.forEach(label => {
+                if (label.object === obj) {
+                    if (obj.visible) {
+                        scene.add(label); // Add label back to scene
+                        label.element.style.display = "block";
+                    } else {
+                        scene.remove(label); // Remove label from scene
+                        label.element.style.display = "none";
+                    }
+                }
+            });
+
             // Update raycasterMeshes to exclude hidden objects
             raycasterMeshes = objectArray
             .filter(o => o.visible)
@@ -197,6 +209,15 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log("delete button pressed");
             scene.remove(obj);
             objectArray = objectArray.filter(o => o !== obj); // Remove object from array
+            
+            cssLabelObjects = cssLabelObjects.filter(label => {
+                if (label.object === obj) {
+                    scene.remove(label);
+                    return false; // Remove from the array
+                }
+                return true;
+            });
+            
             updateSidebar(); // Refresh list if needed (you can also just remove this item from the list)
             // Find the list item corresponding to the object
         };
@@ -277,8 +298,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 if( intersections.length > 0) 
                 {
                     // Add a label to this point in 3D space
+                    const intersectedObject = intersections[0].object.parent; 
+                    const label = addLabel(scene, intersections[0].point, labels, buttonState);
+                    label.object = intersectedObject;
+                    console.log('intersected object: ', intersectedObject.filename);
+                    cssLabelObjects.push(label);
                     console.log("add LABEL");
-                    addLabel( scene, intersections[0].point, labels, buttonState );
+                    //addLabel( scene, intersections[0].point, labels, buttonState );
                 }
                 buttonState.selectedButton = 'add';
                 break;

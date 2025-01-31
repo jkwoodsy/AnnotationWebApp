@@ -14,7 +14,7 @@ export class Label {
 let cssLabelObjects = [];
 
 // Add label to 3D scene
-export function addLabel( scene, coordinates, labels, buttonState, text = "" ) {
+export function addLabel( scene, coordinates, labels, buttonState, text = "") {
     // Create a div element
     const div = document.createElement( 'div' );
 
@@ -34,7 +34,7 @@ export function addLabel( scene, coordinates, labels, buttonState, text = "" ) {
         console.log("click click");
         console.log(buttonState.selectedButton);
         if( buttonState.selectedButton === 'delete' ) {
-            console.log("deleteeeee");
+
             if( window.confirm( "You would like to delete the label: " + text) )
             {
                 // Remove the label from the scene
@@ -58,12 +58,19 @@ export function addLabel( scene, coordinates, labels, buttonState, text = "" ) {
     // Create the new label
     const label = new CSS2DObject( div );
 
-    cssLabelObjects.push( label );
+    label.position.copy(coordinates);
+    //labelObject.userData.parentObject = parentObject; // Associate label with object   
+   
+    //cssLabelObjects.push( label );
 
     // Set the position of the label
-    label.position.set( coordinates.x, coordinates.y, coordinates.z );
+    //label.position.set( coordinates.x, coordinates.y, coordinates.z );
 
     scene.add( label );
+
+    label.element = div;
+
+    return label;
 };
 
 
