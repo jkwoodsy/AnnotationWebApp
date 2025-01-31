@@ -183,6 +183,12 @@ document.addEventListener('DOMContentLoaded', function() {
             obj.visible = !obj.visible;
             hideButton.textContent = obj.visible ? "Hide" : "Show";
             obj.visible ? scene.add(obj) : scene.remove(obj); // Add or remove from scene
+           
+            // Update raycasterMeshes to exclude hidden objects
+            raycasterMeshes = objectArray
+            .filter(o => o.visible)
+            .flatMap(obj => getMeshesFromFBXObject(obj));    
+        
         };
     
         const deleteButton = document.createElement("button");
@@ -260,7 +266,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // Get the intersections
         // Check if it intersects with any of the children objects in the scene.
         //const intersections = raycaster.intersectObjects( getMeshesFromFBXObject(Object3D), false);
-        const intersections = raycaster.intersectObjects(raycasterMeshes, false);
+        const visibleMeshes = raycasterMeshes.filter(mesh => mesh.visible);
+        
+        const intersections = raycaster.intersectObjects(visibleMeshes, false);
         // If there are any intersections, then we will get the first one.
         switch( buttonState.selectedButton ) {
             case "select":
