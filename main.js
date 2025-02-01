@@ -213,6 +213,7 @@ document.addEventListener('DOMContentLoaded', function() {
             cssLabelObjects = cssLabelObjects.filter(label => {
                 if (label.object === obj) {
                     scene.remove(label);
+                    label.element.remove();
                     return false; // Remove from the array
                 }
                 return true;
