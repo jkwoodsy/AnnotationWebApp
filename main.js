@@ -38,6 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let cssLabelObjects = [];
     let scaleFactor = null;
     const objectRawDataMap = new Map();
+    let isTransparent = false;  // Track the state of the transparency
 
     let lastObjData = null; // Store last .obj data for reloading with .mtl
 
@@ -188,6 +189,24 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         return meshes;
     };
+
+    // Add a button event listener for toggling transparency
+    document.getElementById('toggle-transparency').onclick = function() {
+        isTransparent = !isTransparent;  // Toggle the transparency state
+
+        // Iterate through all objects in the scene
+        objectArray.forEach(object => {
+            object.traverse(child => {
+                if (child.isMesh && child.material) {
+                    child.material.transparent = isTransparent;  // Set transparency to true or false
+                    child.material.opacity = isTransparent ? 0.6 : 1.0;  // Set opacity to 0.7 when transparent, 1 when not
+                }
+            });
+        });
+
+        console.log(`Transparency set to: ${isTransparent ? 'Enabled' : 'Disabled'}`);
+    };   
+
 
     // Render Scene
     function render() {
