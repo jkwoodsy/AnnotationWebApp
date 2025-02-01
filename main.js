@@ -11,6 +11,7 @@ import { addLabel, removeAllLabels } from './label.js';
 import { controlsStyling, toggleLabel } from './controls.js';
 import { resetCamera} from './camera.js';
 import { loadGoogleTranslate } from './translate.js';
+import { addObjToSidebar, updateSidebar} from './sidebar.js';
 // Import raycasting library
 /*
     Raycasting allows us to select points on the 3D Model, by selecting this point, we can then add the labels to it.
@@ -146,7 +147,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 //Object3D = object;
                 objectArray.push(object);
 
-                addObjToSidebar(object);
+                addObjToSidebar(object, scene, objectArray, cssLabelObjects, raycasterMeshes);
 
                 objectArray.forEach((obj) => {
                     if (obj) {
@@ -170,74 +171,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     };
-
-    function addObjToSidebar(obj) {
-        const list = document.getElementById("object-list");
-        const listItem = document.createElement("li");
-        listItem.textContent = obj.filename;
-    
-        const hideButton = document.createElement("button");
-        hideButton.textContent = obj.visible ? "Hide" : "Show";
-        hideButton.onclick = () => {
-            console.log("hide button pressed");
-            obj.visible = !obj.visible;
-            hideButton.textContent = obj.visible ? "Hide" : "Show";
-            obj.visible ? scene.add(obj) : scene.remove(obj); // Add or remove from scene
-
-            cssLabelObjects.forEach(label => {
-                if (label.object === obj) {
-                    if (obj.visible) {
-                        scene.add(label); // Add label back to scene
-                        label.element.style.display = "block";
-                    } else {
-                        scene.remove(label); // Remove label from scene
-                        label.element.style.display = "none";
-                    }
-                }
-            });
-
-            // Update raycasterMeshes to exclude hidden objects
-            raycasterMeshes = objectArray
-            .filter(o => o.visible)
-            .flatMap(obj => getMeshesFromFBXObject(obj));    
-        
-        };
-    
-        const deleteButton = document.createElement("button");
-        deleteButton.textContent = "Delete";
-        deleteButton.onclick = () => {
-            console.log("delete button pressed");
-            scene.remove(obj);
-            objectArray = objectArray.filter(o => o !== obj); // Remove object from array
-            
-            cssLabelObjects = cssLabelObjects.filter(label => {
-                if (label.object === obj) {
-                    scene.remove(label);
-                    label.element.remove();
-                    return false; // Remove from the array
-                }
-                return true;
-            });
-            
-            updateSidebar(); // Refresh list if needed (you can also just remove this item from the list)
-            // Find the list item corresponding to the object
-        };
-    
-        listItem.appendChild(hideButton);
-        listItem.appendChild(deleteButton);
-        list.appendChild(listItem);
-    }
-
-    function updateSidebar() {
-        const list = document.getElementById("object-list");
-        // Clear the current list
-        list.innerHTML = "";
-    
-        // Iterate through the objectArray and re-add each object to the sidebar
-        objectArray.forEach((obj) => {
-            addObjToSidebar(obj);
-        });
-    }
 
     document.addEventListener('click', (event) => {
         console.log("Global click detected at:", event.target);
@@ -533,7 +466,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Add the new object to the array
                 objectArray.push(objectWithMaterials);
                 console.log("Object added to object array.");
-                updateSidebar();
+                updateSidebar(objectArray);
             
             } catch (error) {
                 console.error("Error applying .mtl file:", error);
