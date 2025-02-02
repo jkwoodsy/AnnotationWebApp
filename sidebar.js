@@ -23,10 +23,12 @@ export function addObjToSidebar(obj, scene, objectArray, cssLabelObjects, raycas
             }
         });
 
+        console.log(raycasterMeshes.length);
         // Update raycasterMeshes to exclude hidden objects
-        raycasterMeshes = objectArray
-        .filter(o => o.visible)
-        .flatMap(obj => getMeshesFromFBXObject(obj));    
+        raycasterMeshes.length = 0;
+        objectArray.filter(o => o.visible).forEach(o => {
+            raycasterMeshes.push(...getMeshesFromFBXObject(o));
+        }); 
     
     };
 
@@ -35,8 +37,11 @@ export function addObjToSidebar(obj, scene, objectArray, cssLabelObjects, raycas
     deleteButton.onclick = () => {
         console.log("delete button pressed");
         scene.remove(obj);
-        objectArray = objectArray.filter(o => o !== obj); // Remove object from array
-        
+        //objectArray = objectArray.filter(o => o !== obj); // Remove object from array
+        // Remove from objectArray
+        const index = objectArray.indexOf(obj);
+        if (index !== -1) objectArray.splice(index, 1);
+
         cssLabelObjects = cssLabelObjects.filter(label => {
             if (label.object === obj) {
                 scene.remove(label);
@@ -46,7 +51,11 @@ export function addObjToSidebar(obj, scene, objectArray, cssLabelObjects, raycas
             return true;
         });
         
-        updateSidebar(objectArray); // Refresh list if needed (you can also just remove this item from the list)
+        updateSidebar(objectArray, scene, cssLabelObjects, raycasterMeshes); // Refresh list if needed (you can also just remove this item from the list)
+        raycasterMeshes.length = 0;
+        objectArray.filter(o => o.visible).forEach(o => {
+            raycasterMeshes.push(...getMeshesFromFBXObject(o));
+        });
         // Find the list item corresponding to the object
     };
 
@@ -55,13 +64,25 @@ export function addObjToSidebar(obj, scene, objectArray, cssLabelObjects, raycas
     list.appendChild(listItem);
 }
 
-export function updateSidebar(objectArray) {
+export function updateSidebar(objectArray, scene, cssLabelObjects, raycasterMeshes) {
     const list = document.getElementById("object-list");
     // Clear the current list
     list.innerHTML = "";
 
     // Iterate through the objectArray and re-add each object to the sidebar
     objectArray.forEach((obj) => {
-        addObjToSidebar(obj);
+        addObjToSidebar(obj, scene, objectArray, cssLabelObjects, raycasterMeshes);
     });
 }
+
+function getMeshesFromFBXObject ( object ) {
+    // Store the meshes in an array
+    const meshes = [];
+    // Traverse the object and get the meshes
+    object.traverse( child => {
+        if ( child.isMesh ) {
+            meshes.push( child );
+        };
+    });
+    return meshes;
+};
