@@ -65,7 +65,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // scene.add(new THREE.AxesHelper(5));
 
     // Material for 3D objects
-    const material = new THREE.MeshStandardMaterial( { color: 0xff0000 } );
+    //const material = new THREE.MeshStandardMaterial( { color: 0xff0000 } );
+    const material = new THREE.MeshStandardMaterial();
     material.side = THREE.DoubleSide;
 
     // Loaders for FBX, OBJ and STL files
@@ -448,19 +449,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     alert("No corresponding .obj file found for the .mtl.");
                     return;
                 }
-                console.log("error check 4");
                 const textData = new TextDecoder().decode(objRawData);
-                console.log("error check 5");
                 const objectWithMaterials = objLoader.parse(textData);
-                console.log("error check 6");
                 // Ensure no material is transparent
                 objectWithMaterials.traverse((child) => {
                     if (child.isMesh && child.material) {
-                        child.material.transparent = false; // Disable transparency
-                        child.material.opacity = 1; // Ensure full opacity
+                        child.material.transparent = true; // Disable transparency
+                        child.material.opacity = 0.6; // Ensure full opacity
                     }
                 });
-                console.log("error check 7");
                 console.log(objectArray);  // Log the array
                 console.log(objFileName);  // Log the file name you're trying to match
                 const oldObjectIndex = objectArray.findIndex(obj => obj.filename === objFileName);
