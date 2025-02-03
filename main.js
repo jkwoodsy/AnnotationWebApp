@@ -149,8 +149,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 //Object3D = object;
                 objectArray.push(object);
 
-                addObjToSidebar(object, scene, objectArray, cssLabelObjects, raycasterMeshes);
-
+                //addObjToSidebar(object, scene, objectArray, cssLabelObjects, raycasterMeshes);
+                
                 objectArray.forEach((obj) => {
                     if (obj) {
                         //obj.scale.set(0,0,0);
@@ -161,7 +161,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Update the raycaster to use the new object's meshes
                 raycasterMeshes = objectArray.flatMap((obj) => getMeshesFromFBXObject(obj));
-
+                addObjToSidebar(object, scene, objectArray, cssLabelObjects, raycasterMeshes);
                 // Redefine box
                 box = new THREE.Box3().setFromObject(object);
                 resetCamera(camera, objectArray);
@@ -482,7 +482,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Add the new object to the array
                 objectArray.push(objectWithMaterials);
                 console.log("Object added to object array.");
-                updateSidebar(objectArray);
+                raycasterMeshes = objectArray.flatMap((obj) => getMeshesFromFBXObject(obj));
+                updateSidebar(objectArray, scene, cssLabelObjects, raycasterMeshes);
             
             } catch (error) {
                 console.error("Error applying .mtl file:", error);
