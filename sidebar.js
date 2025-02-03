@@ -1,4 +1,4 @@
-export function addObjToSidebar(obj, scene, objectArray, cssLabelObjects, raycasterMeshes) {
+export function addObjToSidebar(obj, scene, objectArray, cssLabelObjects, raycasterMeshes) { 
     const list = document.getElementById("object-list");
     const listItem = document.createElement("li");
     listItem.textContent = obj.filename;
@@ -14,10 +14,10 @@ export function addObjToSidebar(obj, scene, objectArray, cssLabelObjects, raycas
         cssLabelObjects.forEach(label => {
             if (label.object === obj) {
                 if (obj.visible) {
-                    scene.add(label); // Add label back to scene
+                    scene.add(label);
                     label.element.style.display = "block";
                 } else {
-                    scene.remove(label); // Remove label from scene
+                    scene.remove(label);
                     label.element.style.display = "none";
                 }
             }
@@ -38,20 +38,37 @@ export function addObjToSidebar(obj, scene, objectArray, cssLabelObjects, raycas
         console.log("delete button pressed");
         scene.remove(obj);
         //objectArray = objectArray.filter(o => o !== obj); // Remove object from array
+        
+        // Dispose of geometry and materials
+        obj.traverse(child => {
+            if (child.isMesh) {
+                child.geometry.dispose();
+                if (Array.isArray(child.material)) {
+                    child.material.forEach(mat => mat.dispose());
+                } else {
+                    child.material.dispose();
+                }
+            }
+        });
+
         // Remove from objectArray
         const index = objectArray.indexOf(obj);
         if (index !== -1) objectArray.splice(index, 1);
 
-        cssLabelObjects = cssLabelObjects.filter(label => {
+        // Remove associated labels in place
+        cssLabelObjects.splice(0, cssLabelObjects.length, ...cssLabelObjects.filter(label => {
             if (label.object === obj) {
                 scene.remove(label);
                 label.element.remove();
-                return false; // Remove from the array
+                return false;
             }
             return true;
-        });
-        
-        updateSidebar(objectArray, scene, cssLabelObjects, raycasterMeshes); // Refresh list if needed (you can also just remove this item from the list)
+        }));
+
+        // Remove the corresponding list item
+        listItem.remove();
+
+        //updateSidebar(objectArray, scene, cssLabelObjects, raycasterMeshes); // Refresh list if needed (you can also just remove this item from the list)
         raycasterMeshes.length = 0;
         objectArray.filter(o => o.visible).forEach(o => {
             raycasterMeshes.push(...getMeshesFromFBXObject(o));
