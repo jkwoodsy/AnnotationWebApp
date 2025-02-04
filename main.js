@@ -423,17 +423,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 const objFileName = mtlFile.name.replace(".mtl", ".obj");
                 console.log('filename: ', objFileName);
                 const objRawData = objectRawDataMap.get(objFileName);
-                console.log("error check 3");
                 if (!objRawData) {
                     console.error("No raw .obj data found for the selected .mtl file.");
                     alert("No corresponding .obj file found for the .mtl.");
                     return;
                 }
-                console.log("error check 4");
                 const textData = new TextDecoder().decode(objRawData);
-                console.log("error check 5");
                 const objectWithMaterials = objLoader.parse(textData);
-                console.log("error check 6");
                 // Ensure no material is transparent
                 objectWithMaterials.traverse((child) => {
                     if (child.isMesh && child.material) {
@@ -441,13 +437,21 @@ document.addEventListener('DOMContentLoaded', function() {
                         child.material.opacity = 1; // Ensure full opacity
                     }
                 });
-                console.log("error check 7");
                 console.log(objectArray);  // Log the array
                 console.log(objFileName);  // Log the file name you're trying to match
                 const oldObjectIndex = objectArray.findIndex(obj => obj.filename === objFileName);
                 console.log("object index: ", oldObjectIndex);
                 if (oldObjectIndex !== -1) {
                     const oldObject = objectArray[oldObjectIndex];
+                    
+                    // Update labels to point to the new object
+                    cssLabelObjects.forEach((label) => {
+                        if (label.object === oldObject) {
+                            label.object = objectWithMaterials; // Reassign to new object
+                            console.log(`Label reassigned to new object: ${label.textContent}`);
+                        }
+                    });
+                    
                     scene.remove(oldObject);
                     objectWithMaterials.filename = oldObject.filename;
                     console.log("Old object removed from scene.");
