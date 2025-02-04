@@ -134,6 +134,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 object.scale.set(scaleFactor, scaleFactor, scaleFactor); // Apply scaling 
                 
+                //object.position.set(0, 0, 0);
+                
                 object.traverse( function ( child ) {
                     if (child.isMesh) {
                         child.material = material
@@ -233,10 +235,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 {
                     // Add a label to this point in 3D space
                     const intersectedObject = intersections[0].object.parent; 
-                    const label = addLabel(scene, intersections[0].point, labels, buttonState);
+                    const label = addLabel(scene, intersections[0].point, labels, cssLabelObjects, buttonState);
                     label.object = intersectedObject;
                     console.log('intersected object: ', intersectedObject.filename);
-                    cssLabelObjects.push(label);
+                    //cssLabelObjects.push(label);
                     console.log("add LABEL");
                     //addLabel( scene, intersections[0].point, labels, buttonState );
                 }

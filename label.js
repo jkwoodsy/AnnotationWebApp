@@ -14,10 +14,9 @@ export class Label {
 let cssLabelObjects = [];
 
 // Add label to 3D scene
-export function addLabel( scene, coordinates, labels, buttonState, text = "") {
+export function addLabel( scene, coordinates, labels, cssLabelObjects, buttonState, text = "") {
     // Create a div element
     const div = document.createElement( 'div' );
-
     div.className = 'label';
 
     if(text == "" ) {
@@ -25,18 +24,18 @@ export function addLabel( scene, coordinates, labels, buttonState, text = "") {
     }
 
     div.textContent = text.toUpperCase();
-
     labels.push( new Label(coordinates, div.textContent) );
     console.log(labels);
 
+    // Create the new label
+    const label = new CSS2DObject( div );
+    label.position.copy(coordinates);
+
     // Add an event listener to the HTML element wrapping the label
     div.addEventListener( 'pointerdown', function () {
-        console.log("click click");
         console.log(buttonState.selectedButton);
         if( buttonState.selectedButton === 'delete' ) {
-
-            if( window.confirm( "You would like to delete the label: " + text) )
-            {
+            if( window.confirm( "You would like to delete the label: " + text) ) {
                 // Remove the label from the scene
                 scene.remove( label );
                 div.remove();
@@ -47,6 +46,12 @@ export function addLabel( scene, coordinates, labels, buttonState, text = "") {
                         labels.splice(i, 1);
                     }
                 }
+
+                // Remove the label from cssLabelObjects
+                const index = cssLabelObjects.indexOf(label);
+                if (index > -1) {
+                    cssLabelObjects.splice(index, 1);
+                }       
             }
         }
         else if( buttonState.selectedButton === 'change' ) {
@@ -56,12 +61,12 @@ export function addLabel( scene, coordinates, labels, buttonState, text = "") {
     });
 
     // Create the new label
-    const label = new CSS2DObject( div );
+    /*const label = new CSS2DObject( div );
 
-    label.position.copy(coordinates);
+    label.position.copy(coordinates);*/
     //labelObject.userData.parentObject = parentObject; // Associate label with object   
    
-    //cssLabelObjects.push( label );
+    cssLabelObjects.push( label );
 
     // Set the position of the label
     //label.position.set( coordinates.x, coordinates.y, coordinates.z );
@@ -83,6 +88,7 @@ export function removeAllLabels(scene, labels) {
     });
 
     //labels = [];
+    cssLabelObjects.length = 0;
     labels.length = 0;
     console.log("in remove label funcnction");
     console.log(labels);
