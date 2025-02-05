@@ -133,15 +133,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 object.scale.set(scaleFactor, scaleFactor, scaleFactor); // Apply scaling 
-                
-                //const center = box.getCenter(new THREE.Vector3());
 
-                // Offset the object to the origin
-                //object.position.sub(center);
-                //object.position.set(0, 0, 0);
-                //geometry.center();
-                
-                //object.position.set(0, 0, 0);
+                const boxHelper = new THREE.BoxHelper(object, 0xffff00); // Yellow color
+                scene.add(boxHelper);
                 
                 object.traverse( function ( child ) {
                     if (child.isMesh) {
@@ -171,7 +165,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 addObjToSidebar(object, scene, objectArray, cssLabelObjects, raycasterMeshes);
                 // Redefine box
                 box = new THREE.Box3().setFromObject(object);
-                resetCamera(camera, objectArray);
+                resetCamera(camera, controls, objectArray);
 
                 animate();
             } catch (error) {
@@ -264,7 +258,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Set onclick listener for resetCamera
     document.getElementById('reset-camera').onclick = function() {
-        resetCamera(camera,objectArray);
+        resetCamera(camera,controls, objectArray);
         console.log("Camera reset to default position.");
     };
 
@@ -394,7 +388,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('control-show').click();
             
             controls.dispose();
-            resetCamera(camera, objectArray);
+            resetCamera(camera,controls, objectArray);
             controls = new OrbitControls(camera, labelRenderer.domElement);
             controls.enableDamping = true;
             controls.target.set(0, 0, 0);

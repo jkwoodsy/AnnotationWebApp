@@ -1,32 +1,38 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { FirstPersonControls } from 'three/examples/jsm/controls/FirstPersonControls.js';
 
-export function resetCamera(camera, objects) {
-    // Create a combined bounding box for all objects
+export function resetCamera(camera, controls, objects) {
     const combinedBox = new THREE.Box3();
 
+    // Combine bounding boxes of all objects
     objects.forEach((object) => {
         if (object) {
-            const objectBox = new THREE.Box3().setFromObject(object);
-            combinedBox.union(objectBox); // Expand the combined box to include the object
+            combinedBox.expandByObject(object);
         }
     });
 
-    // Get the size and center of the combined bounding box
-    const size = combinedBox.getSize(new THREE.Vector3());
-    const center = combinedBox.getCenter(new THREE.Vector3());
+    // Calculate bounding sphere from the combined box
+    const boundingSphere = new THREE.Sphere();
+    combinedBox.getBoundingSphere(boundingSphere);
 
-    // Determine the maximum dimension of the box
-    const maxDim = Math.max(size.x, size.y, size.z);
-    const fov = camera.fov * (Math.PI / 180); // Convert FOV to radians
+    const { center, radius } = boundingSphere;
 
-    // Calculate the distance needed for the camera to fit the entire box
-    const cameraZ = Math.abs(maxDim / Math.tan(fov / 2));
+    // Calculate optimal camera distance
+    const fov = THREE.MathUtils.degToRad(camera.fov); // Convert FOV to radians
+    const distance = radius / Math.sin(fov / 2); // Distance based on FOV
 
-    // Update camera position and orientation
-    camera.position.set(center.x, center.y, cameraZ + size.z); // Place camera behind the box
-    camera.lookAt(center); // Make the camera look at the center of the bounding box
-    camera.updateProjectionMatrix(); // Update the camera's projection matrix
+    // Adjust for aspect ratio
+    const aspect = camera.aspect;
+    const adjustedDistance = distance / Math.sqrt(1 + Math.pow(1 / aspect, 2));
+
+    // Position camera
+    camera.position.set(center.x, center.y, center.z + adjustedDistance * 1.1); // Add slight padding
+    camera.lookAt(center);
+    camera.updateProjectionMatrix();
+
+    // Reset controls if available
+    if (controls instanceof OrbitControls) {
+        controls.target.copy(center);
+        controls.update();
+    }
 }
-
