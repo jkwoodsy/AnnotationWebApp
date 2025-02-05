@@ -69,6 +69,9 @@ export function addObjToSidebar(obj, scene, objectArray, cssLabelObjects, raycas
             return true;
         }));
 
+        // Remove from raycasterMeshes
+        raycasterMeshes = raycasterMeshes.filter(mesh => !obj.children.includes(mesh));
+
         // Remove the corresponding list item
         listItem.remove();
 
@@ -77,6 +80,9 @@ export function addObjToSidebar(obj, scene, objectArray, cssLabelObjects, raycas
         objectArray.filter(o => o.visible).forEach(o => {
             raycasterMeshes.push(...getMeshesFromFBXObject(o));
         });
+
+        document.getElementById('file-select').value = '';
+
         // Find the list item corresponding to the object
     };
     listItem.appendChild(filename);
