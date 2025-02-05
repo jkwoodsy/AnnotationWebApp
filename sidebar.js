@@ -1,7 +1,11 @@
 export function addObjToSidebar(obj, scene, objectArray, cssLabelObjects, raycasterMeshes) { 
     const list = document.getElementById("object-list");
     const listItem = document.createElement("li");
-    listItem.textContent = obj.filename;
+    //listItem.textContent = obj.filename;
+    
+    const filename = document.createElement("span");
+    filename.textContent = obj.filename;
+    filename.classList.add("notranslate");
 
     const hideButton = document.createElement("button");
     hideButton.textContent = obj.visible ? "Hide" : "Show";
@@ -75,7 +79,7 @@ export function addObjToSidebar(obj, scene, objectArray, cssLabelObjects, raycas
         });
         // Find the list item corresponding to the object
     };
-
+    listItem.appendChild(filename);
     listItem.appendChild(hideButton);
     listItem.appendChild(deleteButton);
     list.appendChild(listItem);
