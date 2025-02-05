@@ -134,6 +134,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 object.scale.set(scaleFactor, scaleFactor, scaleFactor); // Apply scaling 
                 
+                //const center = box.getCenter(new THREE.Vector3());
+
+                // Offset the object to the origin
+                //object.position.sub(center);
+                //object.position.set(0, 0, 0);
+                //geometry.center();
+                
                 //object.position.set(0, 0, 0);
                 
                 object.traverse( function ( child ) {

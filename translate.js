@@ -12,7 +12,8 @@ export function loadGoogleTranslate() {
         new google.translate.TranslateElement(
             { 
                 pageLanguage: 'en', 
-                layout: google.translate.TranslateElement.InlineLayout.SIMPLE 
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+                multilanguagePage: true // Ensures 'notranslate' class is respected
             },
             'google_translate_element'  // The div where the translate widget will appear
         );
