@@ -134,8 +134,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 object.scale.set(scaleFactor, scaleFactor, scaleFactor); // Apply scaling 
 
-                const boxHelper = new THREE.BoxHelper(object, 0xffff00); // Yellow color
-                scene.add(boxHelper);
+                //const boxHelper = new THREE.BoxHelper(object, 0xffff00); // Yellow color
+                //scene.add(boxHelper);
                 
                 object.traverse( function ( child ) {
                     if (child.isMesh) {
@@ -238,6 +238,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const intersectedObject = intersections[0].object.parent; 
                     const label = addLabel(scene, intersections[0].point, labels, cssLabelObjects, buttonState);
                     label.object = intersectedObject;
+                    console.log('text: ', label.text);
                     console.log('intersected object: ', intersectedObject.filename);
                     //cssLabelObjects.push(label);
                     console.log("add LABEL");
@@ -268,7 +269,26 @@ document.addEventListener('DOMContentLoaded', function() {
         // Save the object
         // Write labels to JSON file
         console.log(labels);
-        let labelsJSON = JSON.stringify(labels);
+
+        let labelsData = labels.map((label, index) => {
+            console.log("Processing label:", label.text);
+        
+            // Use the index to get the corresponding pair from cssLabelObjects
+            let associatedObject = cssLabelObjects[index]?.object;  // Access the object using the same index
+        
+            console.log("Associated object:", associatedObject);
+        
+            return {
+                text: label.text,
+                coordinates: label.coordinates,  // Ensure position is stored
+                filename: associatedObject?.filename || "unknown"  // Ensure filename is stored
+            };
+        });
+        
+    
+        console.log(labelsData);
+        let labelsJSON = JSON.stringify(labelsData, null, 2);
+        //let labelsJSON = JSON.stringify(labels);
 
         // Create a Blob containing the JSON data
         let blob = new Blob([labelsJSON], { type: 'application/json' });
@@ -316,8 +336,9 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log(fileName);
         
             // Remove all labels from the scene
-            removeAllLabels(scene, labels);
+            removeAllLabels(scene, cssLabelObjects, labels);
             labels = [];
+            cssLabelObjects = [];
         
             const reader = new FileReader();
             reader.onload = (e) => {
@@ -343,32 +364,46 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('json-file-select').onchange = function(event) {
         // Get file contents
         let file = event.target.files[0];
-
+    
         removeAllLabels(scene, labels);
         console.log("removed labels");
-        console.log(labels);
-        labelsFileName = file.name;
-
-        if ( file ) {
+    
+        if (file) {
             const fileReader = new FileReader();
             fileReader.onload = function(e) {
                 const data = e.target.result;
                 let tempLabels = JSON.parse(data.toString());
-                console.log("uploading labels:" + tempLabels);
-
+                console.log("uploading labels:", tempLabels);
+    
                 for (let i = 0; i < tempLabels.length; i++) {
-                    // Call addLabel function to add labels
-                    addLabel(scene, tempLabels[i].coordinates, labels, buttonState, tempLabels[i].text);
+                    const labelData = tempLabels[i];
+                    console.log("Adding label with text:", labelData.text);
+                    console.log("Coordinates:", labelData.coordinates);
+                    
+                    // Find the object that matches the filename in the label
+                    const associatedObject = objectArray.find(obj => obj.filename === labelData.filename);
+                    if (associatedObject) {
+                        // Add the label and assign the object
+                        const label = addLabel(scene, labelData.coordinates, labels, cssLabelObjects, buttonState, labelData.text);
+                        label.object = associatedObject; // Assign the object to the label
+                        console.log("TEXT:", label.text);
+                        console.log(`Label "${label.text}" assigned to object with filename: ${associatedObject.filename}`);
+                        
+                        label.visible = associatedObject.visible;
+                    } else {
+                        console.error(`No object found for label with filename: ${labelData.filename}`);
+                    }
                 }
             };
             fileReader.readAsText(file);
         }
-
-        document.getElementById('json-file-select').value = '';
+    
+        document.getElementById('json-file-select').value = '';  // Reset the file input
     };
+    
 
     // Set event listener for camera-toggle
-    document.getElementById('control-switch').onchange = function() {
+    /*document.getElementById('control-switch').onchange = function() {
         if(document.getElementById('control-switch').checked) {
             // Hide the labels.
             document.getElementById('control-hide').click();
@@ -393,7 +428,7 @@ document.addEventListener('DOMContentLoaded', function() {
             controls.enableDamping = true;
             controls.target.set(0, 0, 0);
         }
-    };
+    };*/
 
     document.getElementById('add-mtl').onclick = function () {
         // Trigger the hidden file input for .mtl
@@ -489,19 +524,18 @@ document.addEventListener('DOMContentLoaded', function() {
     function animate() {
         requestAnimationFrame(animate)
 
-        if(document.getElementById('control-switch').checked) {
+        /*if(document.getElementById('control-switch').checked) {
             controls.update( clock.getDelta() );
         }
         else {
             controls.update()
-        }
+        }*/
 
         render();
 
         // Update styling of controls
         controlsStyling(buttonState);
         toggleLabel();
-
         /*if( Object.is( Object3D, null ) == false ) {
             document.getElementById('cover').hidden = true;
             document.getElementById('initial-add-div').style.display = "none";

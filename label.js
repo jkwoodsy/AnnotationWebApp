@@ -15,6 +15,9 @@ let cssLabelObjects = [];
 
 // Add label to 3D scene
 export function addLabel( scene, coordinates, labels, cssLabelObjects, buttonState, text = "") {
+   
+   //console.log("text: ", text);
+
     // Create a div element
     const div = document.createElement( 'div' );
     div.className = 'label';
@@ -66,7 +69,12 @@ export function addLabel( scene, coordinates, labels, cssLabelObjects, buttonSta
     label.position.copy(coordinates);*/
     //labelObject.userData.parentObject = parentObject; // Associate label with object   
    
-    cssLabelObjects.push( label );
+    console.log(Array.isArray(cssLabelObjects)); // Should be true
+    if (Array.isArray(cssLabelObjects)) {
+        cssLabelObjects.push(label);
+    } else {
+        console.error("cssLabelObjects is not an array");
+    }
 
     // Set the position of the label
     //label.position.set( coordinates.x, coordinates.y, coordinates.z );
@@ -79,17 +87,18 @@ export function addLabel( scene, coordinates, labels, cssLabelObjects, buttonSta
 };
 
 
-export function removeAllLabels(scene, labels) {
+export function removeAllLabels(scene, cssLabelObjects, labels) {
     // Remove from labels[] the labels we do not want
     // for each loop
-
+    //console.log("cssLabelObjects: ", cssLabelObjects);
+    //console.log("labels: ", labels);
     cssLabelObjects.forEach( label => {
         scene.remove( label );
     });
 
-    //labels = [];
+    labels = [];
     cssLabelObjects.length = 0;
-    labels.length = 0;
+    //labels.length = 0;
     console.log("in remove label funcnction");
     console.log(labels);
 }
