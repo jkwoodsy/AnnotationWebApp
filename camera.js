@@ -22,7 +22,7 @@ export function toggleCameraRotation(camera, controls, objectArray, isRotatingX,
 
         // Set up the camera's automatic rotation around the center
         const elapsedTime = clock.getElapsedTime();
-        const rotationSpeed = 0.1;  // Speed of rotation
+        const rotationSpeed = 0.4;  // Speed of rotation
         const orbitRadius = radius * 2;
 
         // X-axis rotation (left to right)
