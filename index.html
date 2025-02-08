@@ -9,6 +9,7 @@
         <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
         <script src="main.js" type="module" defer></script>
         <script src="sidebar.js" type="module" defer></script>
+        <script src="camera.js" type="module" defer></script>
     </head>
     <body>
         <nav>
@@ -60,6 +61,14 @@
                 <label class="no-select"><input id="toggle-transparency" class="controls nav-button" type="button" />Transparent</label>
             </div>
             
+            <div class="spacing"></div>
+            <div id="rotation-x-div">
+                <label id="rotation-x" class="not-selected">
+                    <input type="button" class="controls" name="rotate" id="rotate-x"/>Rotate X</label>
+            </div>
+            <div id="rotation-y-div" class="">
+                <label id="rotation-y" class="not-selected"><input type="button" class="controls" name="rotate" id="rotate-y"/>Rotate Y</label>
+            </div>
         </div>
         <div class="scene-container">
             <script type="module" src="main.js"></script>

@@ -226,6 +226,28 @@ nav {
     opacity: 1;
 }
 
+/* Rotation button container */
+#rotation-x-div, #rotation-y-div {
+    font-size: 1rem;
+    padding: 0.5rem;
+    width: 100%;  /* Ensure they take full width of the container */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* Hover state */
+#rotation-x-div:hover, #rotation-y-div:hover {
+    color: white;
+}
+
+#rotation-x-div.selected, #rotation-y-div.selected {
+    opacity: 1;
+}
+
+#rotation-x-div.not-selected, #rotation-y-div.not-selected {
+    opacity: 0.25;
+}
+
 /* Cover styling */
 #cover {
     width: 100%;
