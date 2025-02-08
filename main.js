@@ -10,7 +10,7 @@ import { setupScene } from './scene.js';
 import { addLabel, removeAllLabels } from './label.js';
 import { controlsStyling, toggleLabel } from './controls.js';
 import { toggleCameraRotation, resetCamera} from './camera.js';
-import { loadGoogleTranslate } from './translate.js';
+//import { loadGoogleTranslate } from './translate.js';
 import { addObjToSidebar, updateSidebar} from './sidebar.js';
 
 
@@ -156,6 +156,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                     }
                 });
+
                 scene.add(object)
         
                 //Object3D = object;
@@ -185,10 +186,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     };
-
-    document.addEventListener('click', (event) => {
-        console.log("Global click detected at:", event.target);
-    });
 
     // Function to get meshes from FBX Object
     function getMeshesFromFBXObject ( object ) {
@@ -448,9 +445,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log("Selected .mtl file:", mtlFile.name);
         
         const mtlReader = new FileReader();
-        console.log("error check 1");
         mtlReader.onload = (e) => {
-            console.log("error check 2");
             const mtlData = e.target.result;
             console.log("MTL data loaded:", mtlData);  // Debugging line
     
@@ -473,9 +468,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Ensure no material is transparent
                 objectWithMaterials.traverse((child) => {
                     if (child.isMesh && child.material) {
-                        child.material.transparent = false; // Disable transparency
-                        child.material.opacity = 1; // Ensure full opacity
-                    }
+                            child.material.transparent = true;  // Apply transparency state
+                            child.material.opacity = 1;  // Restore opacity setting
+                        }
                 });
                 console.log(objectArray);  // Log the array
                 console.log(objFileName);  // Log the file name you're trying to match
