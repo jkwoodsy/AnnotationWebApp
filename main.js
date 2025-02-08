@@ -9,9 +9,11 @@ import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer
 import { setupScene } from './scene.js';
 import { addLabel, removeAllLabels } from './label.js';
 import { controlsStyling, toggleLabel } from './controls.js';
-import { resetCamera} from './camera.js';
+import { toggleCameraRotation, resetCamera} from './camera.js';
 import { loadGoogleTranslate } from './translate.js';
 import { addObjToSidebar, updateSidebar} from './sidebar.js';
+
+
 // Import raycasting library
 /*
     Raycasting allows us to select points on the 3D Model, by selecting this point, we can then add the labels to it.
@@ -38,6 +40,15 @@ document.addEventListener('DOMContentLoaded', function() {
     let cssLabelObjects = [];
     let scaleFactor = null;
     const objectRawDataMap = new Map();
+    let angle = 0;
+
+    // Initialize variables to track rotation state
+    let isRotatingX = false;
+    let isRotatingY = false;
+
+    // Get the buttons by their IDs
+    const rotateXButton = document.getElementById('rotate-x');
+    const rotateYButton = document.getElementById('rotate-y');
 
     let lastObjData = null; // Store last .obj data for reloading with .mtl
 
@@ -46,9 +57,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Box to have the bounding box of the object
     let box = new THREE.Box3();
-
-    // A variable to store the Object to add as raycasting parameter
-    //let Object3D = null;
 
     // An array to store the objects to add as raycasting parameter
     let objectArray = []; //const?
@@ -60,6 +68,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let controls = new OrbitControls(camera, labelRenderer.domElement);
     controls.enableDamping = true;
     controls.target.set(0, 0, 0);
+    controls.update();
     // To show the axes
     // scene.add(new THREE.AxesHelper(5));
 
@@ -336,9 +345,9 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log(fileName);
         
             // Remove all labels from the scene
-            removeAllLabels(scene, cssLabelObjects, labels);
-            labels = [];
-            cssLabelObjects = [];
+           // removeAllLabels(scene, cssLabelObjects, labels);
+            //labels = [];
+           // cssLabelObjects = [];
         
             const reader = new FileReader();
             reader.onload = (e) => {
@@ -365,7 +374,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // Get file contents
         let file = event.target.files[0];
     
-        removeAllLabels(scene, labels);
+        removeAllLabels(scene, cssLabelObjects, labels);
+        //cssLabelObjects = [];
+        //labels = [];
         console.log("removed labels");
     
         if (file) {
@@ -400,35 +411,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
         document.getElementById('json-file-select').value = '';  // Reset the file input
     };
-    
-
-    // Set event listener for camera-toggle
-    /*document.getElementById('control-switch').onchange = function() {
-        if(document.getElementById('control-switch').checked) {
-            // Hide the labels.
-            document.getElementById('control-hide').click();
-
-            // Get rid of the old controls and its settings
-            controls.dispose();
-
-            controls = new FirstPersonControls(camera, labelRenderer.domElement);
-            controls.movementSpeed = 0.1;
-            controls.lookSpeed = 0.1;
-
-            controls.verticalMin = -Math.PI;
-            controls.verticalMax = Math.PI;
-        }
-        else {
-            // Show the labels
-            document.getElementById('control-show').click();
-            
-            controls.dispose();
-            resetCamera(camera,controls, objectArray);
-            controls = new OrbitControls(camera, labelRenderer.domElement);
-            controls.enableDamping = true;
-            controls.target.set(0, 0, 0);
-        }
-    };*/
 
     document.getElementById('add-mtl').onclick = function () {
         // Trigger the hidden file input for .mtl
@@ -519,28 +501,41 @@ document.addEventListener('DOMContentLoaded', function() {
     
         mtlReader.readAsText(mtlFile);
     };
-    
+
+    // Toggle rotation on X axis
+    rotateXButton.onclick = function() {
+        isRotatingX = !isRotatingX;
+        
+        if (isRotatingX) {
+            console.log("Camera rotation x started.");
+        } else {
+            console.log("Camera rotation x stopped.");
+        }
+    };
+
+    // Toggle rotation on Y axis
+    rotateYButton.onclick = function() {
+        isRotatingY = !isRotatingY;
+
+        if (isRotatingY) {
+            console.log("Camera rotation y started.");
+        } else {
+            console.log("Camera rotation x stopped.");
+        }
+    };
 
     function animate() {
         requestAnimationFrame(animate)
 
-        /*if(document.getElementById('control-switch').checked) {
-            controls.update( clock.getDelta() );
-        }
-        else {
-            controls.update()
-        }*/
+        toggleCameraRotation(camera, controls, objectArray, isRotatingX, isRotatingY);
 
         render();
 
         // Update styling of controls
         controlsStyling(buttonState);
         toggleLabel();
-        /*if( Object.is( Object3D, null ) == false ) {
-            document.getElementById('cover').hidden = true;
-            document.getElementById('initial-add-div').style.display = "none";
-        }*/
-           // Check if objectArray contains valid objects
+
+        // Check if objectArray contains valid objects
         if (Array.isArray(objectArray) && objectArray.length > 0) {
             const hasValidObject = objectArray.some(obj => obj !== null && obj instanceof THREE.Object3D);
 
