@@ -10,7 +10,7 @@ import { setupScene } from './scene.js';
 import { addLabel, removeAllLabels } from './label.js';
 import { controlsStyling, toggleLabel } from './controls.js';
 import { toggleCameraRotation, resetCamera} from './camera.js';
-//import { loadGoogleTranslate } from './translate.js';
+import { loadGoogleTranslate } from './translate.js';
 import { addObjToSidebar, updateSidebar} from './sidebar.js';
 
 
@@ -50,6 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Get the buttons by their IDs
     const rotateXButton = document.getElementById('rotate-x');
     const rotateYButton = document.getElementById('rotate-y');
+    const transparencyButton = document.getElementById('toggle-transparency');
 
     let lastObjData = null; // Store last .obj data for reloading with .mtl
 
@@ -109,6 +110,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     object = objLoader.parse( textData);
                     //object.scale.set(0.01,0.01,0.01);
                     objectRawDataMap.set(fileName, data);
+                    object.rotation.x = -Math.PI / 2;
+
+                    object.children.forEach((child) => {
+                        if (child.isMesh) {
+                            console.log('Mesh name:', child.name); // Mesh name from .obj file
+                            // Apply materials, scaling, etc. here
+                        }
+                    });
+                    
                 }
                 else if (fileType == 'stl'){
                     document.getElementById('add-mtl-div').style.display = "none";
@@ -497,6 +507,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 box = new THREE.Box3().setFromObject(objectWithMaterials);
                 objectWithMaterials.scale.set(scaleFactor, scaleFactor, scaleFactor);
+                objectWithMaterials.rotation.x = -Math.PI / 2;
 
                 // Add the object with materials to the scene
                 scene.add(objectWithMaterials);
@@ -526,6 +537,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             console.log("Camera rotation x stopped.");
         }
+        rotateXButton.innerHTML = isRotatingX ? "Stop X Rotation" : "Start X Rotation";
     };
 
     // Toggle rotation on Y axis

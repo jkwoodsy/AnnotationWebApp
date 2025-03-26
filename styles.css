@@ -227,7 +227,7 @@ nav {
 }
 
 /* Rotation button container */
-#rotation-x-div, #rotation-y-div {
+#rotation-x-div, #rotation-y-div, #toggle-transparency-div {
     font-size: 1rem;
     padding: 0.5rem;
     width: 100%;  /* Ensure they take full width of the container */
@@ -236,7 +236,7 @@ nav {
 }
 
 /* Hover state */
-#rotation-x-div:hover, #rotation-y-div:hover {
+#rotation-x-div:hover, #rotation-y-div:hover, toggle-transparency-div:hover {
     color: white;
 }
 
